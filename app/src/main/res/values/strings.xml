@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Smart AI Expense Tracker</string>
+
+    <!-- Home -->
+    <string name="total_spent_this_month">Total spent this month</string>
+    <string name="percent_from_last_month">+%1$s from last month</string>
+    <string name="used">Used</string>
+    <string name="remaining_budget">Remaining Budget</string>
+    <string name="days_left">%1$d days left</string>
+    <string name="plan_high_savings">Plan: High Savings</string>
+    <string name="ai_insight">AI Insight</string>
+    <string name="ai_insight_home">Food spending is 20%% higher than last week. Consider cooking at home this weekend to stay within your Green Budget goal</string>
+    <string name="spending_categories">Spending Categories</string>
+
+    <!-- Transactions -->
+    <string name="search">Search</string>
+    <string name="ai_insight_transport">Your transport spending is 12%% lower than last week.</string>
+    <string name="today">Today</string>
+
+    <!-- Budget -->
+    <string name="monthly_spending">Monthly Spending</string>
+    <string name="budget_health">Budget Health</string>
+    <string name="percent_spent">%1$s spent</string>
+    <string name="on_track">On Track</string>
+    <string name="percent_utilized">%1$s Utilized</string>
+    <string name="remaining">Remaining</string>
+    <string name="days_left_label">Days Left</string>
+    <string name="days_count">%1$d Days</string>
+    <string name="category_spending">Category Spending</string>
+    <string name="amount_remaining">%1$s remaining</string>
+    <string name="of_amount_remaining">of %1$s remaining</string>
+
+    <!-- Chat -->
+    <string name="chat_placeholder">Add Expense etc</string>
+    <string name="send">Send</string>
+    <string name="chat_stub_reply">I logged that. (wire me up to your backend)</string>
+
+    <!-- Account -->
+    <string name="monitor_your_finance">Monitor your finance</string>
+    <string name="track_finance_description">Track your day to day finance, get AI insights for categories</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="fetching_spending_categories">Fetching spending categories</string>
+    <string name="retry">Retry</string>
+</resources>
