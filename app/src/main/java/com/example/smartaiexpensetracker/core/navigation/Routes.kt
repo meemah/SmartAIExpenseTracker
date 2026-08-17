@@ -7,4 +7,5 @@ object Routes {
 
 
     const val CHAT = "CHAT"
+    const val SETTINGS = "SETTINGS"
 }
