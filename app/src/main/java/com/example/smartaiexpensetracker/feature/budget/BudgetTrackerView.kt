@@ -105,7 +105,7 @@ fun BudgetTrackerView(
                     if (budgetSummaryData?.byCategory.isNullOrEmpty()) {
                         item { EmptyState() }
                     }
-                    items(budgetSummaryData!!.byCategory) {
+                    items(budgetSummaryData?.byCategory.orEmpty()) {
                         val category = CategoryData.homeCategories.firstOrNull { category ->
                             category.title.equals(it.categoryName, ignoreCase = true)
                         } ?: CategoryData.homeCategories.last()
@@ -170,7 +170,7 @@ fun BudgetTrackerView(
                                         Text(
                                             stringResource(
                                                 R.string.of_amount_remaining,
-                                                it.budget.formatNaira()
+                                                (it.budget ?: 0.0).formatNaira()
                                             ),
                                             style = MaterialTheme.typography.bodySmall.copy(
                                                 fontSize = 12.sp,
@@ -189,7 +189,8 @@ fun BudgetTrackerView(
                                             .fillMaxWidth(),
                                         trackColor = colors.background,
                                         progress = {
-                                            if (it.budget > 0.0) (it.spent / it.budget).toFloat()
+                                            val b = it.budget ?: 0.0
+                                            if (b > 0.0) (it.spent / b).toFloat()
                                                 .coerceIn(0f, 1f) else 0f
                                         })
                                 }

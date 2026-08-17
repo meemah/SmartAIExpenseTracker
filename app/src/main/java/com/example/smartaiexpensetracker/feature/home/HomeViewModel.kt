@@ -70,10 +70,12 @@ class HomeViewModel @Inject constructor(
         _isRefreshing.value = true
         viewModelScope.launch {
             try {
-                val budget = async { budgetRepo.getBudgetSummary().unwrap() }
-                val insight = async { chatRepo.getInsight().unwrap() }
-                _budgetSummary.value = UiState.Success(budget.await())
-                _chatInsight.value = UiState.Success(insight.await())
+                coroutineScope {
+                    val budget = async { budgetRepo.getBudgetSummary().unwrap() }
+                    val insight = async { chatRepo.getInsight().unwrap() }
+                    _budgetSummary.value = UiState.Success(budget.await())
+                    _chatInsight.value = UiState.Success(insight.await())
+                }
             } catch (_: Exception) {
             } finally {
                 _isRefreshing.value = false
