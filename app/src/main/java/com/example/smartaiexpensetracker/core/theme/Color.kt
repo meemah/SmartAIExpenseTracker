@@ -20,13 +20,14 @@ val DarkGlassBorder = Color(0x0DFFFFFF) // White 5%
 val DarkSurfaceContainer = Color(0xff171f33)
 
 // Light palette
+val LightPrimary = Color(0xFFFFFFFF)
 val LightBackground = Color(0xfff6f8f7)
 val LightOnSurface = Color(0xff1a1c1e)
 val LightOnSurfaceVariant = Color(0xff44483e)
 val LightSurface = Color(0xff16a34a)
 val LightOutlineVariant = Color(0xffc4c8bb)
-val LightOnPrimaryContainer = Color(0xff002109)
-val LightOnSecondaryContainer = Color(0xff001a0e)
+val LightOnPrimaryContainer = Color(0xff16a34a)
+val LightOnSecondaryContainer = Color(0xff0d7a34)
 val LightSlate = Color(0xFF6B7280)
 val LightGlassBackground = Color(0xFFe8ecf4)
 val LightGlassBorder = Color(0x0D000000) // Black 5%

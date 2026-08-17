@@ -64,7 +64,7 @@ fun RemainingBudgetCard(
                     letterSpacing = 0.8.sp,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colors.onPrimaryContainer.copy(
+                    color = Color.White.copy(
                         alpha = 0.8f
                     )
                 )
@@ -73,13 +73,13 @@ fun RemainingBudgetCard(
                 (remainingBudget ?: 0.0).formatNaira(),
                 style = typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = colors.onPrimaryContainer,
+                    color = Color.White,
                     fontSize = 26.sp
                 )
             )
         }
         HorizontalDivider(
-            color = colors.onPrimaryContainer.copy(alpha = 0.1f)
+            color = Color.White.copy(alpha = 0.1f)
         )
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -97,7 +97,7 @@ fun RemainingBudgetCard(
                 ), style = typography.bodyMedium.copy(
                     letterSpacing = 0.8.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colors.onPrimaryContainer.copy(
+                    color = Color.White.copy(
                         alpha = 0.8f
                     )
                 )
@@ -107,7 +107,7 @@ fun RemainingBudgetCard(
                 style = typography.bodyMedium.copy(
                     letterSpacing = 0.8.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colors.onPrimaryContainer.copy(
+                    color = Color.White.copy(
                         alpha = 0.8f
                     )
                 )

@@ -45,7 +45,7 @@ private val DarkCustomColors = CustomThemeColor(
 )
 
 private val LightCustomColors = CustomThemeColor(
-    primary = Primary,
+    primary = LightPrimary,
     background = LightBackground,
     onSurface = LightOnSurface,
     onSurfaceVariant = LightOnSurfaceVariant,
@@ -67,7 +67,7 @@ private val DarkMaterialColors = darkColorScheme(
 )
 
 private val LightMaterialColors = lightColorScheme(
-    primary = Primary,
+    primary = LightPrimary,
     background = LightBackground,
     onSurface = LightOnSurface,
     onSurfaceVariant = LightOnSurfaceVariant,
