@@ -24,16 +24,15 @@ fun AppButton(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isLoading: Boolean = false,
+    backgroundColor: Color = MaterialTheme.customColors.onSecondaryContainer,
     onClick: () -> Unit,
 
 ) {
     Box(
         modifier = modifier
-            .clickable(onClick = onClick)
             .clip(RoundedCornerShape(8.dp))
-            .background(
-                color = MaterialTheme.customColors.onSecondaryContainer
-            )
+            .background(color = backgroundColor)
+            .clickable(enabled = !isLoading, onClick = onClick)
             .padding(vertical = 15.dp)
             .fillMaxWidth(), contentAlignment = Alignment.Center
     ) {

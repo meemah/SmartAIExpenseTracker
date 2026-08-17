@@ -33,3 +33,5 @@ val LightGlassBackground = Color(0xFFe8ecf4)
 val LightGlassBorder = Color(0x0D000000) // Black 5%
 
 val LightSurfaceContainer = Color(0xffFFFFFF)
+
+val Destructive = Color(0xFFDC2626)

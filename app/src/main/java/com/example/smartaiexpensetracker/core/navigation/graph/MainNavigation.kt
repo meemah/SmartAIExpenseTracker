@@ -13,5 +13,5 @@ fun NavGraphBuilder.mainRoutes(navController: NavController) {
     composable(Routes.CHAT) {
         ChatView()
     }
-    composable(Routes.SETTINGS) { SettingsView() }
+    composable(Routes.SETTINGS) { SettingsView(navController= navController) }
 }
