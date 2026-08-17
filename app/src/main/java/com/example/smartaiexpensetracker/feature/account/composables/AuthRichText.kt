@@ -21,8 +21,7 @@ fun AuthRichText(primaryText: String, clickableText: String, tag:String, onClick
             withLink(
                 LinkAnnotation.Clickable(
                     tag = tag,
-                    linkInteractionListener = {
-                    }
+                    linkInteractionListener = { onClick() }
                 )
             ) {
                 withStyle(
@@ -35,6 +34,8 @@ fun AuthRichText(primaryText: String, clickableText: String, tag:String, onClick
                 }
             }
 
-        }, style = MaterialTheme.typography.bodySmall
+        }, style = MaterialTheme.typography.bodySmall.copy(
+            color = MaterialTheme.customColors.slate
+        )
     )
 }
