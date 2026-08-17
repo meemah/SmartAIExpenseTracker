@@ -27,7 +27,7 @@ class ChatRepoImpl @Inject constructor(
     }
 
     override suspend fun getInsight(): ApiResponse<ApiResultWrapper<ChatInsight>> {
-        return httpClient.getApiResponse("insight/")
+        return httpClient.getApiResponse("chat/insight/")
     }
 
 }
