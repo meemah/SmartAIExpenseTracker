@@ -26,6 +26,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import javax.inject.Singleton
@@ -64,9 +65,16 @@ object AppModule {
                     if (!response.status.isSuccess()) {
                         val message = try {
                             val body = response.bodyAsText()
-                            val convertedJson = Json.parseToJsonElement(body).jsonObject["message"]
-                            convertedJson?.jsonPrimitive?.content ?: "Something went wrong"
-                        } catch (e: Exception) {
+                            val json = Json.parseToJsonElement(body).jsonObject
+                            json["message"]?.jsonPrimitive?.content
+                                ?: json["detail"]?.jsonPrimitive?.content
+                                ?: json.values.firstNotNullOfOrNull { it.jsonPrimitive.contentOrNull }
+                                ?: "Something went wrong"
+                        } catch (e: kotlin.coroutines.cancellation.CancellationException) {
+                            throw e
+                        }
+
+                        catch (e: Exception) {
                             "Something went wrong"
                         }
                         throw ApiException(response.status.value, message)
