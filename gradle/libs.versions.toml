@@ -21,6 +21,7 @@ securityCrypto = "1.1.0-alpha06"
 navigationCompose = "2.9.0"
 
 coil = "3.0.4"
+datastorePreferences = "1.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,8 @@ sandwich-ktor = { group = "com.github.skydoves", name = "sandwich-ktor", version
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 
 coil-compose = {module ="io.coil-kt.coil3:coil-compose",version.ref = "coil"}
 coil-network-okhttp = {module ="io.coil-kt.coil3:coil-network-okhttp",version.ref = "coil"}

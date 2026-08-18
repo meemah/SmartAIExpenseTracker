@@ -81,6 +81,8 @@ dependencies {
 
     implementation(libs.navigation.compose)
 
+    implementation(libs.datastore.preferences)
+
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 }
