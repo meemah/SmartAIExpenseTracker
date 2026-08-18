@@ -3,13 +3,11 @@ package com.example.smartaiexpensetracker.feature.account.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smartaiexpensetracker.core.data.AuthResponse
-import com.example.smartaiexpensetracker.core.manager.TokenManager
+import com.example.smartaiexpensetracker.core.manager.SessionManager
 import com.example.smartaiexpensetracker.core.repos.AuthRepo
 import com.example.smartaiexpensetracker.core.util.FieldState
 import com.example.smartaiexpensetracker.core.util.UiState
 import com.example.smartaiexpensetracker.core.util.Validators
-import com.skydoves.sandwich.ApiResponse.Companion.exception
-import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val authRepository: AuthRepo,
-    private val tokenManager: TokenManager
+    private val sessionManager: SessionManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SignInUiState())
     val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
@@ -51,7 +49,8 @@ class SignInViewModel @Inject constructor(
 
             ).onSuccess {
                 val authResponse: AuthResponse = data.data
-                tokenManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
+                sessionManager.saveTokens(authResponse.accessToken, authResponse.refreshToken)
+                sessionManager.saveUser(authResponse.user)
                 _uiState.update { it.copy(submitState = UiState.Success(authResponse.user)) }
             }.onException {
                 _uiState.update {

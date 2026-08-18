@@ -2,6 +2,7 @@ package com.example.smartaiexpensetracker.feature.account.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smartaiexpensetracker.core.manager.SessionManager
 import com.example.smartaiexpensetracker.core.repos.AuthRepo
 import com.example.smartaiexpensetracker.core.util.FieldState
 import com.example.smartaiexpensetracker.core.util.UiState
@@ -22,8 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val authRepo: AuthRepo
-
+    private val authRepo: AuthRepo,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SignUpUIState())
     val uiState: StateFlow<SignUpUIState> = _uiState.asStateFlow()
@@ -56,6 +57,8 @@ class SignupViewModel @Inject constructor(
                 lastName = state.lastName.value,
                 password = state.confirmPassword.value
             ).onSuccess {
+                sessionManager.saveTokens(data.data.accessToken, data.data.refreshToken)
+                sessionManager.saveUser(data.data.user)
                 _uiState.update {
                     it.copy(
                         userState = UiState.Success(data.data.user)
