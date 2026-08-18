@@ -1,13 +1,15 @@
 package com.example.smartaiexpensetracker.core.di
 
 import android.util.Log
-import com.example.smartaiexpensetracker.core.manager.TokenManager
+import com.example.smartaiexpensetracker.core.data.RefreshTokenResponse
+import com.example.smartaiexpensetracker.core.manager.SessionManager
 import com.example.smartaiexpensetracker.core.util.ApiException
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.auth.Auth
@@ -18,6 +20,8 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -37,7 +41,7 @@ object AppModule {
     @OptIn(ExperimentalSerializationApi::class)
     @Provides
     @Singleton
-    fun provideHttpClient(tokenManager: TokenManager): HttpClient {
+    fun provideHttpClient(sessionManager: SessionManager): HttpClient {
         return HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(
@@ -72,25 +76,44 @@ object AppModule {
                                 ?: "Something went wrong"
                         } catch (e: kotlin.coroutines.cancellation.CancellationException) {
                             throw e
-                        }
-
-                        catch (e: Exception) {
+                        } catch (e: Exception) {
                             "Something went wrong"
                         }
                         throw ApiException(response.status.value, message)
                     }
                 }
             }
-            install(Auth){
+            install(Auth) {
                 bearer {
                     loadTokens {
-                        val accessToken = tokenManager.getAccessToken()
-                        val refreshToken = tokenManager.getRefreshToken()
-                        if(accessToken!=null && refreshToken!=null){
-                            BearerTokens(accessToken,refreshToken)
-                        }else null
+                        val accessToken = sessionManager.getAccessToken()
+                        val refreshToken = sessionManager.getRefreshToken()
+                        if (accessToken != null && refreshToken != null) {
+                            BearerTokens(accessToken, refreshToken)
+                        } else null
+                    }
+                    refreshTokens {
+                        val refreshToken = sessionManager.getRefreshToken();
+                        if (refreshToken != null) {
+                            try {
+                                val response = client.post("users/refresh") {
+                                    headers {
+                                        append("Authorization", "Bearer $refreshToken")
+                                    }
+                                }
+                                val body = response.body<RefreshTokenResponse>()
+                                sessionManager.saveTokens(body.accessToken, body.refreshToken)
+                                BearerTokens(body.accessToken, body.refreshToken)
+
+                            } catch (_: Exception) {
+                                sessionManager.clearSession()
+                                null
+                            }
+                        }
+                        return@refreshTokens null
                     }
                 }
+
             }
         }
     }
