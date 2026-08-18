@@ -32,18 +32,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.smartaiexpensetracker.core.composables.AppButton
+import com.example.smartaiexpensetracker.core.data.ThemeMode
 import com.example.smartaiexpensetracker.core.modifiers.glassCard
 import com.example.smartaiexpensetracker.core.navigation.Routes
 import com.example.smartaiexpensetracker.core.theme.Destructive
 import com.example.smartaiexpensetracker.core.theme.customColors
+import java.util.Locale
 
 
 @Composable
@@ -53,9 +57,8 @@ fun SettingsView(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val colors = MaterialTheme.customColors
-    var selectedTheme by remember {
-        mutableStateOf(ThemeMode.SYSTEM)
-    }
+    val themeMode by viewModel.themeDataStore.themeMode.collectAsStateWithLifecycle(ThemeMode.SYSTEM)
+
     Scaffold(
         containerColor = colors.background
     ) { innerPadding ->
@@ -76,13 +79,12 @@ fun SettingsView(
                     .size(72.dp)
                     .clip(CircleShape)
             )
-            Text(
-                "Maimunah Ibrahim", style = MaterialTheme.typography.titleMedium.copy(
+            Text(viewModel.user?.let { "${it.firstName.capitalize(Locale.getDefault())} ${it.lastName.capitalize()}" } ?: "User",
+                style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold, fontSize = 18.sp, color = colors.onSurface
-                )
-            )
+                ))
             Text(
-                "meemah@getnada.com",
+                viewModel.user?.email ?: "user @gmail.com",
                 modifier = Modifier.padding(top = 4.dp, bottom = 10.dp),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = colors.slate
@@ -134,8 +136,8 @@ fun SettingsView(
                 ) {
                     ThemeMode.entries.forEachIndexed { index, theme ->
                         SegmentedButton(
-                            selected = selectedTheme == theme,
-                            onClick = { selectedTheme = theme },
+                            selected = themeMode == theme,
+                            onClick = { viewModel.updateTheme(theme) },
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = index, count = ThemeMode.entries.size
                             )
@@ -151,8 +153,7 @@ fun SettingsView(
             }
             Spacer(Modifier.height(20.dp))
             AppButton(
-                buttonTitle = "Logout",
-                backgroundColor = Destructive
+                buttonTitle = "Logout", backgroundColor = Destructive
             ) {
                 viewModel.logout()
                 navController.navigate(Routes.SIGN_IN) {
@@ -164,9 +165,3 @@ fun SettingsView(
 }
 
 
-
-
-
-enum class ThemeMode(val label: String) {
-    SYSTEM("System"), LIGHT("Light"), DARK("Dark")
-}
