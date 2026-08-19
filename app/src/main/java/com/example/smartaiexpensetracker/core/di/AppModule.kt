@@ -94,9 +94,11 @@ object AppModule {
                     }
                     refreshTokens {
                         val refreshToken = sessionManager.getRefreshToken();
+                        Log.d("KtorClient", "${refreshToken} ${sessionManager.getAccessToken()}")
                         if (refreshToken != null) {
                             try {
                                 val response = client.post("users/refresh") {
+                                    markAsRefreshTokenRequest()
                                     headers {
                                         append("Authorization", "Bearer $refreshToken")
                                     }

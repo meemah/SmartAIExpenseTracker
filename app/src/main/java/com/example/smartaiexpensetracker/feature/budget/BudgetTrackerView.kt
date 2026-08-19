@@ -1,7 +1,5 @@
 package com.example.smartaiexpensetracker.feature.budget
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,8 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.smartaiexpensetracker.R
-import com.example.smartaiexpensetracker.core.data.BudgetSummaryCategory
-import com.example.smartaiexpensetracker.core.data.CategoryData
+import com.example.smartaiexpensetracker.core.data.CategoryType
 import com.example.smartaiexpensetracker.core.modifiers.glassCard
 import com.example.smartaiexpensetracker.core.states.EmptyState
 import com.example.smartaiexpensetracker.core.states.ErrorState
@@ -106,9 +103,7 @@ fun BudgetTrackerView(
                         item { EmptyState() }
                     }
                     items(budgetSummaryData?.byCategory.orEmpty()) {
-                        val category = CategoryData.homeCategories.firstOrNull { category ->
-                            category.title.equals(it.categoryName, ignoreCase = true)
-                        } ?: CategoryData.homeCategories.last()
+                        val category = CategoryType.fromName(it.categoryName)
                         Column(
                             modifier = Modifier
                                 .glassCard()
