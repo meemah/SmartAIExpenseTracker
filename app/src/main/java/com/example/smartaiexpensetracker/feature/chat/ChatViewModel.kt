@@ -33,12 +33,12 @@ class ChatViewModel @Inject constructor(
             chatRepo.chat(message = trimmedMessage).onSuccess {
                 _messages.add(ChatMessage(role = ChatRole.ASSISTANT, text = data.data.reply))
             }.onException {
-                ChatMessage(
+                _messages.add(ChatMessage(
                     text = throwable.message ?: "Something went wrong",
                     role = ChatRole.ASSISTANT
-                )
+                ))
             }
+            _isTyping.value = false
         }
-        _isTyping.value = false
     }
 }
