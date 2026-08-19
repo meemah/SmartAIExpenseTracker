@@ -2,6 +2,7 @@ package com.example.smartaiexpensetracker.feature.settings
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,7 +80,8 @@ fun SettingsView(
                     .size(72.dp)
                     .clip(CircleShape)
             )
-            Text(viewModel.user?.let { "${it.firstName.capitalize(Locale.getDefault())} ${it.lastName.capitalize()}" } ?: "User",
+            Text(viewModel.user?.let { "${it.firstName.capitalize(Locale.getDefault())} ${it.lastName.capitalize()}" }
+                ?: "User",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold, fontSize = 18.sp, color = colors.onSurface
                 ))
@@ -93,6 +95,9 @@ fun SettingsView(
 
             Row(
                 modifier = Modifier
+                    .clickable(onClick = {
+                        navController.navigate(Routes.BUDGET_SETUP)
+                    })
                     .glassCard()
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically

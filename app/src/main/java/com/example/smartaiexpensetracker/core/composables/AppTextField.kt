@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -35,12 +37,12 @@ fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
     bottonPadding: Double = 10.0,
-    label: String,
+    label: String? = null,
     hintText: String? = null,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
     textFieldType: TextFieldType = TextFieldType.NORMAL,
-    isError: Boolean = false,
+    textAlign: TextAlign = TextAlign.Start,
     errorMessage: String? = null
 ) {
 
@@ -52,6 +54,7 @@ fun AppTextField(
         TextFieldType.NORMAL -> KeyboardType.Text
         TextFieldType.EMAIL -> KeyboardType.Email
         TextFieldType.PASSWORD -> KeyboardType.Password
+        TextFieldType.NUMBER_ONLY -> KeyboardType.Number
     }
 
     val visualTransformation =
@@ -63,23 +66,33 @@ fun AppTextField(
     Column(
         modifier = modifier.padding(bottom = (bottonPadding).dp)
     ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.headlineSmall.copy(
-                color = MaterialTheme.customColors.onSurfaceVariant,
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp
-            ),
-        )
+        label?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = MaterialTheme.customColors.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp
+                ),
+            )
+        }
         OutlinedTextField(
             modifier = Modifier
                 .padding(top = 2.dp)
                 .fillMaxWidth(),
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                if (textFieldType == TextFieldType.NUMBER_ONLY) {
+                    if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                        onValueChange(newValue)
+                    }
+                } else {
+                    onValueChange(newValue)
+                }
+            },
             leadingIcon = leadingIcon,
-            trailingIcon = {
-                when (textFieldType) {
-                    TextFieldType.PASSWORD -> {
+            trailingIcon = when (textFieldType) {
+                TextFieldType.PASSWORD -> {
+                    {
                         Icon(
                             if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = null,
@@ -88,21 +101,21 @@ fun AppTextField(
                             }),
                         )
                     }
-
-                    else -> trailingIcon
                 }
+                else -> trailingIcon
             },
             supportingText = errorMessage?.let {
                 {
                     Text(errorMessage)
                 }
             },
-            isError = errorMessage!=null,
+            isError = errorMessage != null,
             value = value,
             placeholder = hintText?.let { { Text(it) } },
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
+            textStyle = LocalTextStyle.current.copy(textAlign = textAlign),
             visualTransformation = visualTransformation,
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -122,5 +135,6 @@ fun AppTextField(
 enum class TextFieldType {
     NORMAL,
     EMAIL,
-    PASSWORD
+    PASSWORD,
+    NUMBER_ONLY
 }

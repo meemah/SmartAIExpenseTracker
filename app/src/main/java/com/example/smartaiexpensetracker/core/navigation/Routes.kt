@@ -8,4 +8,6 @@ object Routes {
 
     const val CHAT = "CHAT"
     const val SETTINGS = "SETTINGS"
+
+    const val BUDGET_SETUP = "BUDGET_SETUP"
 }
