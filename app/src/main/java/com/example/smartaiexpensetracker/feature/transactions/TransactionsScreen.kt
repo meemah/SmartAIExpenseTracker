@@ -102,7 +102,7 @@ fun TransactionsScreen(
                                 if (isSelected) colors.onPrimaryContainer else colors.glassBackground
 
                             Text(
-                                it,
+                                it.capitalize(),
                                 modifier = Modifier
                                     .clickable(onClick = {
                                         viewModel.selectCategory(it)
@@ -134,7 +134,12 @@ fun TransactionsScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(transactions) {
+                        items(transactions.filter {
+                            it.category.equals(
+                                viewModel.selectedCategory,
+                                ignoreCase = true
+                            )
+                        }) {
                             val category =
                                 CategoryData.homeCategories.firstOrNull { category ->
                                     category.title.equals(it.category, ignoreCase = true)
@@ -174,7 +179,7 @@ fun TransactionsScreen(
                                         )
                                     )
                                     Text(
-                                        category.title,
+                                        category.title.capitalize(),
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = colors.onSurface
