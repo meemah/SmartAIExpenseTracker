@@ -110,78 +110,89 @@ fun TransactionsScreen(
                     Box(
                         modifier = Modifier.height(height = 10.dp)
                     )
-                    Text(
-                        stringResource(R.string.today),
-                        modifier = Modifier.padding(bottom = 5.dp),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.onSurfaceVariant
-                        ),
-                    )
+
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        items(transactions.filter {
+
+                        val groupedTransactions = transactions.filter {
                             it.category.equals(
                                 viewModel.selectedCategory,
                                 ignoreCase = true
                             )
-                        }) {
-                            val category =
-                                CategoryType.fromName(it.category)
-
-                            Row(
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .glassCard()
-                                    .fillMaxWidth()
-                                    .padding(15.dp)
-                            ) {
-                                Icon(
-                                    category.icon,
-                                    contentDescription = category.title,
-                                    tint = category.color,
-                                    modifier = Modifier
-                                        .background(
-                                            color = category.color.copy(
-                                                alpha = 0.1f
-                                            ), shape = RoundedCornerShape(10.dp)
-                                        )
-                                        .padding(10.dp)
+                        }.groupBy { it.createdAt.substringBefore("T") }
+                            .toSortedMap(compareByDescending { it })
+                        groupedTransactions.forEach { (date, responses) ->
+                            item {
+                                Text(
+                                    viewModel.formatDateHeader(date),
+                                    modifier = Modifier.padding(bottom = 2.dp),
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colors.onSurfaceVariant
+                                    ),
                                 )
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                            }
+                            items(responses) {
+                                val category =
+                                    CategoryType.fromName(it.category)
+
+                                Row(
+                                    horizontalArrangement = Arrangement.Center,
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 20.dp)
+                                        .padding(bottom = 8.dp)
+                                        .glassCard()
+                                        .fillMaxWidth()
+                                        .padding(15.dp)
                                 ) {
-                                    Text(
-                                        it.description,
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = colors.onSurfaceVariant
+                                    Icon(
+                                        category.icon,
+                                        contentDescription = category.title,
+                                        tint = category.color,
+                                        modifier = Modifier
+                                            .background(
+                                                color = category.color.copy(
+                                                    alpha = 0.1f
+                                                ), shape = RoundedCornerShape(10.dp)
+                                            )
+                                            .padding(10.dp)
+                                    )
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(horizontal = 20.dp)
+                                    ) {
+                                        Text(
+                                            it.description,
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = colors.onSurfaceVariant
+                                            )
                                         )
-                                    )
-                                    Text(
-                                        category.title.capitalize(),
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = colors.onSurface
+                                        Text(
+                                            category.title.capitalize(),
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = colors.onSurface
+                                            )
                                         )
-                                    )
-                                }
-                                Column {
-                                    Text(
-                                        it.amount.toDoubleOrNull().formatNaira(),
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = colors.onSurfaceVariant
-                                        ),
-                                    )
+                                    }
+                                    Column {
+                                        Text(
+                                            it.amount.toDoubleOrNull().formatNaira(),
+                                            style = MaterialTheme.typography.bodyLarge.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = colors.onSurfaceVariant
+                                            ),
+                                        )
+                                    }
                                 }
                             }
                         }
+
+
                     }
                 }
             }

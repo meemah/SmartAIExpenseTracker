@@ -16,6 +16,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -80,4 +82,19 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+
+    fun formatDateHeader(dateString: String): String {
+        val date = LocalDate.parse(dateString.substringBefore("T"))
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+
+        return when (date) {
+            today -> "Today"
+            yesterday -> "Yesterday"
+            else -> date.format(
+                DateTimeFormatter.ofPattern("MMM dd, yyyy")
+            )
+
+        }
+    }
 }
