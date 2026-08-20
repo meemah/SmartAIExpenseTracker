@@ -36,6 +36,7 @@ class BudgetSetupViewModel @Inject constructor(
 
 
     var isSaving by mutableStateOf(false)
+        private set
 
 
     fun getAllCategories() {
