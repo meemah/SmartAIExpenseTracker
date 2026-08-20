@@ -155,6 +155,7 @@ fun BudgetTrackerView(
                                         Text(
                                             stringResource(
                                                 R.string.amount_remaining,
+                                                ((it.budget ?: 0.0) - it.spent).coerceAtLeast(0.0).formatNaira()
                                             ),
                                             style = MaterialTheme.typography.bodySmall.copy(
                                                 fontSize = 12.sp,

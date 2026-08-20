@@ -28,7 +28,7 @@
     <string name="days_count">%1$d Days</string>
     <string name="category_spending">Category Spending</string>
     <string name="amount_remaining">%1$s remaining</string>
-    <string name="of_amount_remaining">of %1$s remaining</string>
+    <string name="of_amount_remaining">of %1$s </string>
 
     <!-- Chat -->
     <string name="chat_placeholder">Add Expense etc</string>
