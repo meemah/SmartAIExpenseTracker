@@ -82,7 +82,7 @@ fun TransactionsScreen(
                 ) {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        contentPadding = PaddingValues(vertical = 20.dp, horizontal = 10.dp)
+                        modifier = Modifier.padding(bottom = 8.dp)
                     ) {
                         items(viewModel.categories.toList()) {
                             val isSelected = it == viewModel.selectedCategory
