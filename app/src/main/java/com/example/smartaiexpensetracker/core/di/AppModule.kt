@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.smartaiexpensetracker.core.data.RefreshTokenResponse
 import com.example.smartaiexpensetracker.core.manager.SessionManager
 import com.example.smartaiexpensetracker.core.util.ApiException
+import com.example.smartaiexpensetracker.core.util.ApiResultWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,10 +21,14 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -53,7 +58,6 @@ object AppModule {
                 )
             }
             install(Logging) {
-                level = LogLevel.BODY
                 logger = object : Logger {
                     override fun log(message: String) {
                         Log.d("KtorClient", message)
@@ -93,26 +97,44 @@ object AppModule {
                         } else null
                     }
                     refreshTokens {
-                        val refreshToken = sessionManager.getRefreshToken();
-                        Log.d("KtorClient", "${refreshToken} ${sessionManager.getAccessToken()}")
-                        if (refreshToken != null) {
-                            try {
-                                val response = client.post("users/refresh") {
-                                    markAsRefreshTokenRequest()
-                                    headers {
-                                        append("Authorization", "Bearer $refreshToken")
-                                    }
+                        val refreshToken =
+                            sessionManager.getRefreshToken() ?: return@refreshTokens null
+                        val refreshClient = HttpClient(OkHttp)
+                        try {
+                            val response =
+                                refreshClient.post("http://10.0.2.2:8000/api/v1/users/refresh") {
+                                    header(HttpHeaders.Authorization, "Bearer $refreshToken")
                                 }
-                                val body = response.body<RefreshTokenResponse>()
-                                sessionManager.saveTokens(body.accessToken, body.refreshToken)
-                                BearerTokens(body.accessToken, body.refreshToken)
+                            val responseBody = response.bodyAsText()
 
-                            } catch (_: Exception) {
-                                sessionManager.clearSession()
-                                null
+                            if (!response.status.isSuccess()) {
+                                if (response.status == HttpStatusCode.Unauthorized) {
+                                    sessionManager.clearSession()
+                                }
+                                return@refreshTokens null
                             }
+
+                            val json = Json {
+                                ignoreUnknownKeys = true
+                                namingStrategy = JsonNamingStrategy.SnakeCase
+                            }
+                            val body = json.decodeFromString<ApiResultWrapper<RefreshTokenResponse>>(responseBody)
+
+                            sessionManager.saveTokens(
+                                body.data.accessToken,
+                                body.data.refreshToken
+                            )
+                            BearerTokens(
+                                accessToken = body.data.accessToken,
+                                refreshToken = body.data.refreshToken
+                            )
+                        } catch (e: Exception) {
+                            Log.d("KtorClient", "Refresh failed: ${e.message}")
+                            sessionManager.clearSession()
+                            null
+                        } finally {
+                            refreshClient.close()
                         }
-                        return@refreshTokens null
                     }
                 }
 
