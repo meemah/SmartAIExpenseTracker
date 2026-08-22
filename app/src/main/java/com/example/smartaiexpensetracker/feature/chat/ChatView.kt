@@ -14,13 +14,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.outlined.QrCode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +54,7 @@ import com.example.smartaiexpensetracker.feature.chat.composables.TypingIndicato
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatView(
     modifier: Modifier = Modifier, chatViewModel: ChatViewModel = hiltViewModel()
@@ -62,7 +72,50 @@ fun ChatView(
         modifier = modifier
             .fillMaxSize()
             .background(color = MaterialTheme.customColors.background),
-    ) { innerPadding ->
+        topBar = {
+            val colors = MaterialTheme.customColors
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(colors.background),
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    color = colors.onPrimaryContainer,
+                                    shape = RoundedCornerShape(12.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.SmartToy,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.padding(start = 12.dp)
+                        ) {
+                            Text(
+                                "AI Assistant",
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = colors.onSurface
+                                )
+                            )
+                            Text(
+                                "Log expense, set budget, ask questions",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 11.sp,
+                                    color = colors.slate
+                                )
+                            )
+                        }
+                    }
+                }
+            )
+        }) { innerPadding ->
         Column(
             modifier = modifier
                 .padding(20.dp)
@@ -80,7 +133,12 @@ fun ChatView(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(messages, key = { it.id }) { msg ->
-                        ChatBubble(msg)
+                        ChatBubble(
+                            msg = msg,
+                            onRetry = if (msg.isError) {
+                                { chatViewModel.retry(msg) }
+                            } else null
+                        )
                     }
                     if (isTyping) {
                         item {
@@ -120,7 +178,7 @@ fun ChatView(
 
                     }
                 }
-                ChatInput(onSend = chatViewModel::sendMessage)
+                ChatInput(onSend = chatViewModel::sendMessage, isTyping = isTyping)
             }
         }
 

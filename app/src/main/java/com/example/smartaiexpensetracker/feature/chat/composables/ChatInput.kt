@@ -33,7 +33,7 @@ import com.example.smartaiexpensetracker.core.theme.customColors
 
 
 @Composable
-fun ChatInput(onSend: (String) -> Unit) {
+fun ChatInput(onSend: (String) -> Unit, isTyping: Boolean = false) {
     var textInput by remember {
         mutableStateOf(value = "")
     }
@@ -42,21 +42,21 @@ fun ChatInput(onSend: (String) -> Unit) {
     ) {
         OutlinedTextField(
             value = textInput, onValueChange = {
-            textInput = it
-        }, placeholder = {
-            Text(
-                stringResource(R.string.chat_placeholder),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color.Gray
+                textInput = it
+            }, placeholder = {
+                Text(
+                    stringResource(R.string.chat_placeholder),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color.Gray
+                    )
                 )
-            )
-        }, maxLines = 4, colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
-        ), modifier = Modifier
+            }, maxLines = 4, colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent
+            ), modifier = Modifier
                 .glassCard()
                 .weight(1f)
         )
@@ -65,7 +65,7 @@ fun ChatInput(onSend: (String) -> Unit) {
             onClick = {
                 onSend(textInput)
                 textInput = ""
-            }, enabled = textInput.isNotBlank(), modifier = Modifier
+            }, enabled = textInput.isNotBlank() || !isTyping, modifier = Modifier
                 .background(
                     color = MaterialTheme.customColors.onPrimaryContainer,
                     shape = RoundedCornerShape(100)
