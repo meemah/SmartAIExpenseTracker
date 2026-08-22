@@ -25,8 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import java.text.DecimalFormat
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.smartaiexpensetracker.core.theme.customColors
@@ -43,6 +47,7 @@ fun AppTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
     textFieldType: TextFieldType = TextFieldType.NORMAL,
     textAlign: TextAlign = TextAlign.Start,
+    fontWeight: FontWeight? = null,
     errorMessage: String? = null
 ) {
 
@@ -57,12 +62,11 @@ fun AppTextField(
         TextFieldType.NUMBER_ONLY -> KeyboardType.Number
     }
 
-    val visualTransformation =
-        if (textFieldType == TextFieldType.PASSWORD && !passwordVisible) {
-            PasswordVisualTransformation()
-        } else {
-            VisualTransformation.None
-        }
+    val visualTransformation = when {
+        textFieldType == TextFieldType.PASSWORD && !passwordVisible -> PasswordVisualTransformation()
+        textFieldType == TextFieldType.NUMBER_ONLY -> NumberCommaTransformation()
+        else -> VisualTransformation.None
+    }
     Column(
         modifier = modifier.padding(bottom = (bottonPadding).dp)
     ) {
@@ -111,11 +115,20 @@ fun AppTextField(
             },
             isError = errorMessage != null,
             value = value,
-            placeholder = hintText?.let { { Text(it) } },
+            placeholder = hintText?.let {
+                {
+                    Text(
+                        it,
+                        color = MaterialTheme.customColors.slate.copy(alpha = 0.5f),
+                        textAlign = textAlign,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
-            textStyle = LocalTextStyle.current.copy(textAlign = textAlign),
+            textStyle = LocalTextStyle.current.copy(textAlign = textAlign, fontWeight = fontWeight),
             visualTransformation = visualTransformation,
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -137,4 +150,48 @@ enum class TextFieldType {
     EMAIL,
     PASSWORD,
     NUMBER_ONLY
+}
+
+private class NumberCommaTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val original = text.text
+        if (original.isEmpty()) return TransformedText(text, OffsetMapping.Identity)
+
+        val parts = original.split(".")
+        val integerPart = parts[0]
+        val decimalPart = if (parts.size > 1) ".${parts[1]}" else ""
+
+        val formatted = if (integerPart.isNotEmpty()) {
+            val number = integerPart.toLongOrNull()
+            if (number != null) {
+                DecimalFormat("#,###").format(number) + decimalPart
+            } else {
+                original
+            }
+        } else {
+            original
+        }
+
+        val commaPositions = mutableListOf<Int>()
+        for (i in formatted.indices) {
+            if (formatted[i] == ',') commaPositions.add(i)
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                var commasBefore = 0
+                for (pos in commaPositions) {
+                    if (pos - commasBefore < offset) commasBefore++ else break
+                }
+                return offset + commasBefore
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                var commasBefore = commaPositions.count { it < offset }
+                return offset - commasBefore
+            }
+        }
+
+        return TransformedText(AnnotatedString(formatted), offsetMapping)
+    }
 }
