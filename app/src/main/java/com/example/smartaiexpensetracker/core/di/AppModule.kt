@@ -1,5 +1,5 @@
 package com.example.smartaiexpensetracker.core.di
-
+import com.example.smartaiexpensetracker.BuildConfig
 import android.util.Log
 import com.example.smartaiexpensetracker.core.data.RefreshTokenResponse
 import com.example.smartaiexpensetracker.core.manager.SessionManager
@@ -65,7 +65,7 @@ object AppModule {
                 }
             }
             defaultRequest {
-                url("http://10.0.2.2:8000/api/v1/")
+                url(BuildConfig.BASE_URL)
                 contentType(ContentType.Application.Json)
             }
             HttpResponseValidator {
@@ -102,7 +102,7 @@ object AppModule {
                         val refreshClient = HttpClient(OkHttp)
                         try {
                             val response =
-                                refreshClient.post("http://10.0.2.2:8000/api/v1/users/refresh") {
+                                refreshClient.post("${BuildConfig.BASE_URL}users/refresh") {
                                     header(HttpHeaders.Authorization, "Bearer $refreshToken")
                                 }
                             val responseBody = response.bodyAsText()
@@ -118,7 +118,10 @@ object AppModule {
                                 ignoreUnknownKeys = true
                                 namingStrategy = JsonNamingStrategy.SnakeCase
                             }
-                            val body = json.decodeFromString<ApiResultWrapper<RefreshTokenResponse>>(responseBody)
+                            val body =
+                                json.decodeFromString<ApiResultWrapper<RefreshTokenResponse>>(
+                                    responseBody
+                                )
 
                             sessionManager.saveTokens(
                                 body.data.accessToken,

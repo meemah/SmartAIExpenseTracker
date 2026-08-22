@@ -39,7 +39,23 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+    val ENV_DIMENSION = "environment"
+    val baseUrls = mapOf(
+        "staging" to "\"http://10.0.2.2:8000/api/v1/\"",
+        "prod" to "\"https://personal-finance-bot.fly.dev/api/v1/\""
+    )
+    flavorDimensions += ENV_DIMENSION
+    productFlavors {
+        baseUrls.forEach { (env, url) ->
+            create(env) {
+                dimension = ENV_DIMENSION
+                buildConfigField("String", "BASE_URL", url)
+            }
+        }
+    }
+
 }
 
 dependencies {
