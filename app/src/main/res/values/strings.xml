@@ -31,7 +31,7 @@
     <string name="of_amount_remaining">of %1$s </string>
 
     <!-- Chat -->
-    <string name="chat_placeholder">Add Expense etc</string>
+    <string name="chat_placeholder">Add Expense, Set Budget, Ask Questions etc</string>
     <string name="send">Send</string>
     <string name="chat_stub_reply">I logged that. (wire me up to your backend)</string>
 
