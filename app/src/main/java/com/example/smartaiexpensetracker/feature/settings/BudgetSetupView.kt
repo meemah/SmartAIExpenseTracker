@@ -100,7 +100,7 @@ fun BudgetSetupView(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    "Same budget for all categories",
+                                   if (viewModel.sameBudgetForAll )"Same budget for all categories" else "Custom budget for each category",
                                     style = MaterialTheme.typography.titleSmall.copy(
                                         fontWeight = FontWeight.Bold, color = colors.onSurface
                                     )
@@ -126,51 +126,45 @@ fun BudgetSetupView(
                         Spacer(Modifier.height(10.dp))
                         if (viewModel.sameBudgetForAll) {
                             AppTextField(
-                                label = "Total monthly budget",
+                                label = "Budget per category",
                                 value = viewModel.totalBudgetAmount,
                                 onValueChange = {
                                     viewModel.totalBudgetAmount = it
-
-                                })
+                                },
+                                textFieldType = TextFieldType.NUMBER_ONLY,
+                                fontWeight = FontWeight.Bold,
+                                hintText = "Enter a monthly budget"
+                            )
                         } else {
                             LazyColumn(modifier = Modifier.weight(1f)) {
                                 items(categories) { item ->
                                     val category = CategoryType.fromName(item.categoryName)
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(vertical = 8.dp)
+                                        modifier = Modifier.padding(vertical = 10.dp)
                                     ) {
                                         Box(
                                             modifier = Modifier
-                                                .padding(end = 10.dp)
+                                                .padding(end = 12.dp)
                                                 .background(
-                                                    color = category?.color ?: Color(0xFFE0E0E0),
+                                                    color = category.color.copy(alpha = 0.15f),
                                                     shape = RoundedCornerShape(12.dp)
                                                 )
-                                                .size(48.dp), contentAlignment = Alignment.Center
+                                                .size(44.dp),
+                                            contentAlignment = Alignment.Center
                                         ) {
-                                            if (category?.icon != null) {
-                                                Icon(
-                                                    category.icon,
-                                                    contentDescription = item.categoryName,
-                                                    tint = Color(0xFF3C3C3C)
-                                                )
-                                            } else {
-                                                Text(
-                                                    item.categoryName.first().toString(),
-                                                    style = MaterialTheme.typography.titleSmall.copy(
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = Color(0xFF3C3C3C)
-                                                    )
-                                                )
-                                            }
+                                            Icon(
+                                                category.icon,
+                                                contentDescription = item.categoryName,
+                                                tint = category.color
+                                            )
                                         }
                                         Text(
                                             item.categoryName.capitalize(),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = FontWeight.Medium,
+                                                fontWeight = FontWeight.SemiBold,
                                                 color = colors.onSurface
                                             ),
                                             modifier = Modifier
@@ -182,44 +176,50 @@ fun BudgetSetupView(
                                             onValueChange = { value ->
                                                 viewModel.updateAmount(item, value)
                                             },
+                                            hintText = "0",
                                             bottonPadding = 0.0,
-                                            modifier = Modifier.weight(1f),
+                                            modifier = Modifier.weight(0.8f),
                                             textFieldType = TextFieldType.NUMBER_ONLY,
-                                            textAlign = TextAlign.End
+                                            textAlign = TextAlign.End,
+                                            fontWeight = FontWeight.Bold
                                         )
-
                                     }
                                     HorizontalDivider(
-                                        color = colors.slate.copy(alpha = 0.2f),
-                                        thickness = 1.dp,
-                                        modifier = Modifier.padding(vertical = 2.dp)
+                                        color = colors.slate.copy(alpha = 0.12f),
+                                        thickness = 0.5.dp
                                     )
-
                                 }
                                 item {
+                                    HorizontalDivider(
+                                        color = colors.onPrimaryContainer,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(vertical = 12.dp)
+                                        modifier = Modifier.padding(vertical = 14.dp)
                                     ) {
                                         Text(
-                                            "Total",
+                                            "Total Budget",
                                             style = MaterialTheme.typography.titleSmall.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 color = colors.onSurface
                                             ),
                                             modifier = Modifier.weight(1f)
                                         )
+                                        val total = viewModel.amountForCategories.values.sumOf { it.toDoubleOrNull() ?: 0.0 }
                                         Text(
-                                            "%.2f".format(viewModel.amountForCategories.values.sumOf { it.toDoubleOrNull() ?: 0.0 }),
-                                            style = MaterialTheme.typography.titleSmall.copy(
+                                            if (total % 1.0 == 0.0) total.toLong().toString() else "%.2f".format(total),
+                                            style = MaterialTheme.typography.titleMedium.copy(
                                                 fontWeight = FontWeight.Bold,
-                                                color = colors.onSurface
+                                                color = colors.onPrimaryContainer
                                             )
                                         )
                                     }
                                 }
                             }
                         }
+                        Spacer(Modifier.height(16.dp))
                         AppButton(
                             buttonTitle = "Save Budget",
                             isLoading = viewModel.isSaving,
